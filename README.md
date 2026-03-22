@@ -10,6 +10,31 @@ This project is an AI agent designed to smartly answer queries about countries u
 
 ## Agent Architecture (LangGraph Nodes)
 The AI reasoning engine operates using a strict StateGraph pipeline.
+
+```mermaid
+graph TD
+    START((Start))
+    intent[Intent Extraction]
+    validate[Validation]
+    url_builder[URL Builder]
+    tool[API Tool]
+    response_check[Response Validation]
+    synthesis[Synthesis]
+    fallback[Fallback]
+    END_NODE((End))
+
+    START --> intent
+    intent --> validate
+    validate -->|Error| fallback
+    validate -->|Valid| url_builder
+    url_builder --> tool
+    tool --> response_check
+    response_check -->|Error| fallback
+    response_check -->|Success| synthesis
+    synthesis --> END_NODE
+    fallback --> END_NODE
+```
+
 1. **Intent Extraction Node**: Uses the LLM (gpt-4o-mini) to understand the user's query, extracting the specific intent (e.g. `get_country_info`), target entities, and necessary `fields`.
 2. **Validation Node**: Checks if the extracted intent is supported and ensures that all necessary parameters were provided.
 3. **URL Builder Node**: Dynamically constructs the precise `https://restcountries.com/v3.1` REST endpoint and appends necessary URL parameters for filtering.
