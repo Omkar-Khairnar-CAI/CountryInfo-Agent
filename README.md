@@ -1,12 +1,12 @@
 # Country Information AI Agent
 
-This project is an AI agent designed to smartly answer queries about countries using the free [REST Countries API](https://restcountries.com/). It is built precisely utilizing **LangGraph**, **FastAPI**, and **Streamlit** without utilizing any Databases, RAG, or Embeddings as an architectural constraint.
+This project is an AI agent designed to smartly answer queries about countries using the free [REST Countries API](https://restcountries.com/). It is built precisely utilizing **LangGraph**, **FastAPI**, and a robust **React (Vite)** interface without relying on Databases, RAG, or Embeddings as an architectural constraint.
 
 ## Features
 - **Intelligent Reasoning:** Uses LangGraph to execute step-by-step logic nodes: Intent Extraction, Validation, URL Building, API Tool Execution, Response Validation, Synthesis, and Fallback handling.
 - **Dynamic API Integrations:** Intelligently maps the user intent to specific endpoints (e.g., `/name`, `/capital`, `/lang`, `/region`, `/alpha`) and dynamically requests only the required `fields`.
 - **FastAPI Backend:** Orchestrates the multi-node LangGraph flow via robust REST endpoints.
-- **Streamlit Frontend:** A clean chat interface tailored towards engaging user interaction.
+- **React Frontend:** A modular single-shot query/response interface utilizing Vite and modern Tailwind CSS.
 
 ## Agent Architecture (LangGraph Nodes)
 The AI reasoning engine operates using a strict StateGraph pipeline.
@@ -21,20 +21,21 @@ The AI reasoning engine operates using a strict StateGraph pipeline.
 ## Tech Stack
 - **AI Core:** LangGraph, LangChain, OpenAI (gpt-4o-mini)
 - **Backend:** FastAPI, Uvicorn, Pydantic
-- **Frontend:** Streamlit
+- **Frontend:** React, Vite, Tailwind CSS v4, Lucide React
 - **External Data:** REST Countries API (`https://restcountries.com/v3.1`)
 
 ## Prerequisites
-- Python 3.9+
+- Python 3.9+ 
+- Node.js / NPM (v18+)
 - OpenAI API Key
 
 ## Setup & Installation
 
-1. Create a virtual environment and install dependencies:
+1. Create a Python virtual environment and install backend dependencies:
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
 2. Configure environment variables by creating a `.env` file inside the `backend/` folder:
@@ -57,11 +58,11 @@ The FastAPI backend will run on [http://localhost:8000](http://localhost:8000). 
 
 ### 2. Start the Frontend UI
 ```bash
-source venv/bin/activate
 cd frontend
-streamlit run app.py
+npm install
+npm run dev
 ```
-The Streamlit application will become accessible at [http://localhost:8501](http://localhost:8501).
+The React development server will become accessible at [http://localhost:5173](http://localhost:5173).
 
 ## Sample Queries
 - *What is the population of India?*
