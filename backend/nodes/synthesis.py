@@ -13,7 +13,7 @@ prompt = ChatPromptTemplate.from_messages([
     ("human", "query: {query}\n\nAPI Data: {api_data}")
 ])
 
-def synthesize_answer(state: dict) -> dict:
+async def synthesize_answer(state: dict) -> dict:
     query = state.get("query", "")
     api_response = state.get("api_response", {})
     
@@ -27,6 +27,6 @@ def synthesize_answer(state: dict) -> dict:
     llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
     chain = prompt | llm
     
-    result = chain.invoke({"query": query, "api_data": json.dumps(api_response)[:3000]})  # Truncate to avoid context window limits if too large
+    result = await chain.ainvoke({"query": query, "api_data": json.dumps(api_response)[:3000]})  # Truncate to avoid context window limits if too large
     
     return {"final_answer": result.content}

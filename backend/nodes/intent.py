@@ -41,7 +41,6 @@ def extract_intent(state: dict) -> dict:
     
     result = chain.invoke({"query": state["query"]})
 
-    print("Intent: ", result)
     
     return {
         "intent": result.intent,

@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from fastapi.responses import StreamingResponse
 import sys
 import os
+import json
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -30,21 +32,40 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
 
-def process_message_with_ai(message: str) -> str:
-    # Invoke the LangGraph agent
+async def stream_message_with_ai(message: str):
     initial_state = {"query": message}
-    # Invoke returns the final state
-    result_state = agent_graph.invoke(initial_state)
     
-    return result_state.get("final_answer", "Sorry, an unknown error occurred.")
+    try:
+        # Utilize astream_events v2 to intercept language model streams from synthesis node
+        async for event in agent_graph.astream_events(initial_state, version="v2"):
+            kind = event["event"]
+            node_name = event.get("metadata", {}).get("langgraph_node")
+            
+            # 1) Stream tokens ONLY if they are coming from the Synthesis node.
+            # This prevents the 'intent' node's raw JSON from being piped to the frontend.
+            if kind == "on_chat_model_stream" and node_name == "synthesis":
+                chunk = event["data"]["chunk"].content
+                if isinstance(chunk, str) and chunk:
+                    yield f"data: {json.dumps({'chunk': chunk})}\n\n"
+                    
+            # 2) Fallback node does not use an LLM, so it won't trigger 'on_chat_model_stream'.
+            # We must manually catch its output when it finishes and stream it to the UI in one chunk.
+            elif kind == "on_chain_end" and node_name == "fallback":
+                output = event.get("data", {}).get("output", {})
+                if isinstance(output, dict) and "final_answer" in output:
+                    yield f"data: {json.dumps({'chunk': output['final_answer']})}\n\n"
+        
+        # When graph naturally finishes execution
+        yield f"data: {json.dumps({'done': True})}\n\n"
+    except Exception as e:
+        yield f"data: {json.dumps({'error': str(e)})}\n\n"
 
-@app.post("/chat", response_model=ChatResponse)
-def chat_endpoint(request: ChatRequest):
+@app.post("/chat/stream")
+async def chat_stream_endpoint(request: ChatRequest):
     """
-    Endpoint to receive user message and return the AI agent's response.
+    Endpoint to receive user message and return chunked token fragments iteratively via SSE.
     """
-    ai_response = process_message_with_ai(request.message)
-    return ChatResponse(response=ai_response)
+    return StreamingResponse(stream_message_with_ai(request.message), media_type="text/event-stream")
 
 @app.get("/health")
 def health_check():

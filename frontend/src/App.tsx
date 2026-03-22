@@ -17,7 +17,7 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/chat`, {
+      const response = await fetch(`${API_URL}/chat/stream`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,8 +29,53 @@ function App() {
         throw new Error(`Server status: ${response.status}`);
       }
 
-      const data = await response.json();
-      setResult(data.response || "No response received.");
+      if (!response.body) {
+        throw new Error('No response body from stream');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let done = false;
+      let firstChunkReceived = false;
+
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+
+        if (value) {
+          if (!firstChunkReceived) {
+            // Stop the major loading spinner since tokens are starting to flow
+            setIsLoading(false);
+            firstChunkReceived = true;
+          }
+
+          const chunkString = decoder.decode(value, { stream: true });
+          const events = chunkString.split('\n\n');
+
+          for (const ev of events) {
+            if (ev.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(ev.slice(6));
+
+                if (data.error) {
+                  setError(data.error);
+                  break;
+                }
+
+                if (data.done) {
+                  break;
+                }
+
+                if (data.chunk) {
+                  setResult((prev) => (prev || '') + data.chunk);
+                }
+              } catch (e) {
+                // Ignore parsing errors for partial event segments
+              }
+            }
+          }
+        }
+      }
     } catch (err) {
       setError(`Error connecting to backend: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
