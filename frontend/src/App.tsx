@@ -3,7 +3,8 @@ import { SearchBar } from './components/SearchBar';
 import { AgentResult } from './components/AgentResult';
 import { Globe, Sun, Moon } from 'lucide-react';
 
-const API_URL = 'http://localhost:8000';
+
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 function App() {
   const [currentQuery, setCurrentQuery] = useState('');
