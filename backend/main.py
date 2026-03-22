@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import sys
 import os
@@ -13,6 +14,15 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from graph.builder import agent_graph
 
 app = FastAPI(title="LangGraph Country AI Agent API", description="FastAPI server for the LangGraph Country AI Agent")
+
+# Allow CORS for local development with Vite
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class ChatRequest(BaseModel):
     message: str

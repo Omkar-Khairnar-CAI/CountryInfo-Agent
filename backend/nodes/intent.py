@@ -40,6 +40,8 @@ def extract_intent(state: dict) -> dict:
     chain = prompt | structured_llm
     
     result = chain.invoke({"query": state["query"]})
+
+    print("Intent: ", result)
     
     return {
         "intent": result.intent,
