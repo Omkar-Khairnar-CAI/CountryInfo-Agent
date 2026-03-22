@@ -1,0 +1,66 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+.env/
+venv/
+ENV/
+bin/
+lib/
+include/
+
+# Environment variables
+.env
+.flaskenv
+
+# FastAPI Cloud specific
+# Files tracked in git but not needed for deployment (optional)
+# tests/
+# docs/
+# scripts/
+
+# FastAPI specific caches and artifacts
+.mypy_cache/
+.pytest_cache/
+htmlcov/
+.coverage*
+coverage.xml
+site/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*~
+.cache/
+
+# OS specific files
+.DS_Store # macOS
+.Trashes # macOS
+*~ # Linux
