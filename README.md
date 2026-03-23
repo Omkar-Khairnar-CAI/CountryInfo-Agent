@@ -2,6 +2,8 @@
 
 This project is an AI agent designed to smartly answer queries about countries using the free [REST Countries API](https://restcountries.com/). It is built precisely utilizing **LangGraph**, **FastAPI**, and a robust **React (Vite)** interface without relying on Databases, RAG, or Embeddings as an architectural constraint.
 
+**Live Demo:** [https://countryinfo-agent-3.onrender.com/](https://countryinfo-agent-3.onrender.com/)
+
 ## Features
 - **Intelligent Reasoning:** Uses LangGraph to execute step-by-step logic nodes: Intent Extraction, Validation, URL Building, API Tool Execution, Response Validation, Synthesis, and Fallback handling.
 - **Dynamic API Integrations:** Intelligently maps the user intent to specific endpoints (e.g., `/name`, `/capital`, `/lang`, `/region`, `/alpha`) and dynamically requests only the required `fields`.
