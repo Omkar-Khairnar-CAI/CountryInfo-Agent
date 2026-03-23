@@ -65,10 +65,16 @@ source venv/bin/activate
 pip install -r backend/requirements.txt
 ```
 
-2. Configure environment variables by creating a `.env` file inside the `backend/` folder:
+2. Configure backend environment variables by creating a `.env` file inside the `backend/` folder:
 ```env
 # backend/.env
 OPENAI_API_KEY="sk-your-openai-api-key"
+```
+
+3. Configure frontend environment variables by creating a `.env` file inside the `frontend/` folder:
+```env
+# frontend/.env
+VITE_API_BASE_URL="http://localhost:8000"
 ```
 
 ## Running the Application
